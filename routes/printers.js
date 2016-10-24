@@ -7,9 +7,7 @@ router.get('/', function (req, res, next) {
     var printers = printer_interface.getPrinters();
     res.json({
         status: 'success',
-        data: {
-            printers: printers
-        }
+        data: printers
     });
 });
 

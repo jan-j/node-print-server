@@ -27,11 +27,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 // routes configuration
-var routes = require('./routes/index');
-var printers = require('./routes/printers');
-
-app.use('/', routes);
-app.use('/printers', printers);
+app.use('/', require('./routes/index'));
+app.use('/printers', require('./routes/printers'));
+app.use('/printer', require('./routes/printer'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

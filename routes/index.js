@@ -6,7 +6,7 @@ router.get('/', function (req, res, next) {
     res.json({
         status: 'success',
         data: {},
-        message: 'Print server is running'
+        message: 'Print server is running.'
     });
 });
 
