@@ -12,7 +12,7 @@ describe('general app endpoints', function () {
         server.close(done);
     });
 
-    it('GET / - server status', function testRootPath(done) {
+    it('GET / - server status', function (done) {
         request(server)
             .get('/')
             .set('Accept', 'application/json')
@@ -25,7 +25,7 @@ describe('general app endpoints', function () {
             .end(done);
     });
 
-    it('GET /foo/bar - 404 on undefined route', function testInvalidPath(done) {
+    it('GET /foo/bar - 404 on undefined route', function (done) {
         request(server)
             .get('/foo/bar')
             .expect(404)

@@ -7,6 +7,8 @@ describe('printer endpoint', function () {
     var printerStub = {
         printer: null,
         printerDriverOptions: null,
+        job: null,
+        jobCancel: false,
         getPrinter: function (name) {
             if (!this.printer) {
                 throw new TypeError('Printer not found');
@@ -19,6 +21,20 @@ describe('printer endpoint', function () {
                 throw new TypeError('Printer not found');
             } else {
                 return this.printerDriverOptions;
+            }
+        },
+        getJob: function (name, id) {
+            if (!this.job) {
+                throw new TypeError('Printer job not found');
+            } else {
+                return this.job;
+            }
+        },
+        setJob: function (name, id, command) {
+            if (!this.job) {
+                throw new TypeError('Printer job not found');
+            } else {
+                return this.jobCancel;
             }
         }
     };
@@ -83,14 +99,14 @@ describe('printer endpoint', function () {
         server.close(done);
     });
 
-    it('GET /printer - 404 not found', function testPrinterWithoutSpecifyingName(done) {
+    it('GET /printer - 404 not found', function (done) {
         request(server)
             .get('/printer')
             .expect(404)
             .end(done);
     });
 
-    it('GET /printer/NON_EXISTENT_PRINTER - 404 not found', function testPrinterWithInvalidName(done) {
+    it('GET /printer/NON_EXISTENT_PRINTER - 404 not found', function (done) {
         request(server)
             .get('/printer/NON_EXISTENT_PRINTER')
             .expect(404, {
@@ -100,7 +116,7 @@ describe('printer endpoint', function () {
             .end(done);
     });
 
-    it('GET /printer/Brother_DCP_7055W - printer found with 1 job in progress', function testPrinterWithOneJobInProgress(done) {
+    it('GET /printer/Brother_DCP_7055W - printer found with 1 job in progress', function (done) {
         printerStub.printer = printerResponse;
 
         request(server)
@@ -112,7 +128,7 @@ describe('printer endpoint', function () {
             .end(done);
     });
 
-    it('GET /printer/Brother_DCP_7055W - printer found with 0 jobs', function testPrinterWithZeroJobs(done) {
+    it('GET /printer/Brother_DCP_7055W - printer found with 0 jobs', function (done) {
         printerStub.printer = Object.assign({}, printerResponse);
         delete printerStub.printer.jobs;
 
@@ -127,7 +143,19 @@ describe('printer endpoint', function () {
             .end(done);
     });
 
-    it('GET /printer/Brother_DCP_7055W/jobs - found 1 job in progress', function testPrinterJobs(done) {
+    it('GET /printer/Brother_DCP_7055W/driver-options - printer driver options', function (done) {
+        printerStub.printerDriverOptions = printerDriverOptionsResponse;
+
+        request(server)
+            .get('/printer/Brother_DCP_7055W/driver-options')
+            .expect(200, {
+                status: 'success',
+                data: printerStub.printerDriverOptions
+            })
+            .end(done);
+    });
+
+    it('GET /printer/Brother_DCP_7055W/jobs - found 1 job in progress', function (done) {
         printerStub.printer = printerResponse;
 
         request(server)
@@ -139,14 +167,64 @@ describe('printer endpoint', function () {
             .end(done);
     });
 
-    it('GET /printer/Brother_DCP_7055W/driver-options - printer driver options', function testPrinterDriverOptions(done) {
-        printerStub.printerDriverOptions = printerDriverOptionsResponse;
+    it('GET /printer/Brother_DCP_7055W/job/2 - 404 not found', function (done) {
+        printerStub.job = null;
 
         request(server)
-            .get('/printer/Brother_DCP_7055W/driver-options')
+            .get('/printer/Brother_DCP_7055W/job/2')
+            .expect(404, {
+                status: 'error',
+                message: 'Job on printer "Brother_DCP_7055W" with id 2 not found.'
+            })
+            .end(done);
+    });
+
+    it('GET /printer/Brother_DCP_7055W/job/1 - job in progress', function (done) {
+        printerStub.job = printerResponse.jobs[0];
+
+        request(server)
+            .get('/printer/Brother_DCP_7055W/job/1')
             .expect(200, {
                 status: 'success',
-                data: printerStub.printerDriverOptions
+                data: printerStub.job
+            })
+            .end(done);
+    });
+
+    it('POST /printer/Brother_DCP_7055W/job/2/cancel - 404 not found', function (done) {
+        printerStub.job = null;
+
+        request(server)
+            .post('/printer/Brother_DCP_7055W/job/2/cancel')
+            .expect(404, {
+                status: 'error',
+                message: 'Job on printer "Brother_DCP_7055W" with id 2 not found.'
+            })
+            .end(done);
+    });
+
+    it('POST /printer/Brother_DCP_7055W/job/1/cancel - conflict', function (done) {
+        printerStub.job = printerResponse.jobs[0];
+        printerStub.jobCancel = false;
+
+        request(server)
+            .post('/printer/Brother_DCP_7055W/job/1/cancel')
+            .expect(409, {
+                status: 'error',
+                message: 'Job on printer "Brother_DCP_7055W" with id 1 can\'t be cancelled.'
+            })
+            .end(done);
+    });
+
+    it('POST /printer/Brother_DCP_7055W/job/1/cancel - successful', function (done) {
+        printerStub.job = printerResponse.jobs[0];
+        printerStub.jobCancel = true;
+
+        request(server)
+            .post('/printer/Brother_DCP_7055W/job/1/cancel')
+            .expect(200, {
+                status: 'success',
+                message: 'Job on printer "Brother_DCP_7055W" with id 1 cancelled.'
             })
             .end(done);
     });

@@ -45,7 +45,7 @@ describe('printers endpoint', function () {
         server.close(done);
     });
 
-    it('GET /printers - return empty array', function testNoPrinters(done) {
+    it('GET /printers - return empty array', function (done) {
         printerStub.printers = [];
 
         request(server)
@@ -59,7 +59,7 @@ describe('printers endpoint', function () {
             .end(done);
     });
 
-    it('GET /printers - returns array of printers', function testSomePrinters(done) {
+    it('GET /printers - returns array of printers', function (done) {
         printerStub.printers = printersResponse;
 
         request(server)
