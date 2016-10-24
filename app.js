@@ -48,8 +48,11 @@ if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
         res.status(err.status || 500);
         res.json({
+            status: 'error',
             message: err.message,
-            error: err
+            data: {
+                error: err
+            }
         });
     });
 }
@@ -59,10 +62,12 @@ if (app.get('env') === 'development') {
 app.use(function (err, req, res, next) {
     res.status(err.status || 500);
     res.json({
+        status: 'error',
         message: err.message,
-        error: {}
+        data: {
+            error: err
+        }
     });
 });
-
 
 module.exports = app;

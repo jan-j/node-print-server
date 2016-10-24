@@ -7,9 +7,16 @@
   },
   "dependencies": {
     "body-parser": "^1.15.2",
+    "chai": "^3.5.0",
     "debug": "^2.2.0",
     "express": "^4.14.0",
     "file-stream-rotator": "0.0.7",
-    "morgan": "^1.7.0"
+    "morgan": "^1.7.0",
+    "printer": "^0.2.2"
+  },
+  "devDependencies": {
+    "mocha": "^3.1.2",
+    "proxyquire": "^1.7.10",
+    "supertest": "^2.0.1"
   }
 }

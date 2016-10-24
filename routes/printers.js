@@ -1,9 +1,16 @@
 var express = require('express');
+var printer_interface = require('printer');
 var router = express.Router();
 
-/* GET printers listing. */
+// GET printers listing
 router.get('/', function (req, res, next) {
-    res.send('respond with a resource');
+    var printers = printer_interface.getPrinters();
+    res.json({
+        status: 'success',
+        data: {
+            printers: printers
+        }
+    });
 });
 
 module.exports = router;
