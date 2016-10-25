@@ -23,8 +23,13 @@ app.use(morgan('combined', {
 }));
 
 // request parsing
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json({
+    limit: '10mb'
+}));
+app.use(bodyParser.urlencoded({
+    limit: '10mb',
+    extended: true
+}));
 
 // routes configuration
 app.use('/', require('./routes/index'));

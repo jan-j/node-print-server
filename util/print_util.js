@@ -93,12 +93,26 @@ print_util.printBase64File = function (name, base64Content, success, error) {
         printer_interface.printDirect({
             printer: name,
             data: Buffer.from(base64Content, 'base64'),
+            type: print_util.PRINT_FORMATS.AUTO,
+            options: {
+                'fit-to-page': true
+            },
             success: success,
             error: error
         });
     } catch (e) {
         error(e.message);
     }
+};
+
+print_util.PRINT_FORMATS = {
+    AUTO: 'AUTO',
+    COMMAND: 'COMMAND',
+    JPEG: 'JPEG',
+    PDF: 'PDF',
+    POSTSCRIPT: 'POSTSCRIPT',
+    RAW: 'RAW',
+    TEXT: 'TEXT'
 };
 
 module.exports = print_util;

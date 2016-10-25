@@ -3,9 +3,8 @@ var request = require('supertest');
 var printerStub = require('./stubs/printer.stub');
 var proxyquire = require('proxyquire');
 
-var imageFile = fs.readFileSync(__dirname + '/assets/dot.jpg');
+var imageFile = fs.readFileSync(__dirname + '/assets/image.jpg');
 var imageFileBase64 = imageFile.toString('base64');
-fs.writeFileSync(__dirname + '/assets/dot.txt', imageFileBase64);
 
 describe('/printer/:name/print endpoint', function () {
     var server;
