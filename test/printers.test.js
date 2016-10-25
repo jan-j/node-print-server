@@ -5,27 +5,6 @@ var proxyquire = require('proxyquire');
 describe('printers endpoint', function () {
     var server;
 
-    var printersResponse = [
-        {
-            isDefault: false,
-            name: 'Brother_DCP_7055W',
-            options: {
-                copies: '1',
-                'device-uri': 'dnssd://Brother%20DCP-7055W._pdl-datastream._tcp.local./?bidi'
-            },
-            status: 'IDLE'
-        },
-        {
-            isDefault: true,
-            name: 'MITSUBISHI_CPD80D',
-            options: {
-                copies: '1',
-                'device-uri': 'usb://MITSUBISHI/CPD80D?serial=CPD80D104089'
-            },
-            status: 'IDLE'
-        }
-    ];
-
     proxyquire('../util/print_util', {
         printer: printerStub
     });
@@ -54,7 +33,7 @@ describe('printers endpoint', function () {
     });
 
     it('GET /printers - returns array of printers', function (done) {
-        printerStub.printers = printersResponse;
+        printerStub.printers = printerStub._printersResponse;
 
         request(server)
             .get('/printers')
@@ -66,5 +45,4 @@ describe('printers endpoint', function () {
             })
             .end(done);
     });
-
 });

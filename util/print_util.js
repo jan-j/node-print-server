@@ -81,4 +81,24 @@ print_util.setJob = function (name, id, command) {
     return status === true;
 };
 
+/**
+ * @param {string} name
+ * @param {string} base64Content
+ * @param {function} success
+ * @param {function} error
+ * @returns {int}
+ */
+print_util.printBase64File = function (name, base64Content, success, error) {
+    try {
+        printer_interface.printDirect({
+            printer: name,
+            data: Buffer.from(base64Content, 'base64'),
+            success: success,
+            error: error
+        });
+    } catch (e) {
+        error(e.message);
+    }
+};
+
 module.exports = print_util;

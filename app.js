@@ -30,6 +30,9 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use('/', require('./routes/index'));
 app.use('/printers', require('./routes/printers'));
 app.use('/printer', require('./routes/printer'));
+app.use('/printer', require('./routes/printer-jobs'));
+app.use('/printer', require('./routes/printer-job'));
+app.use('/printer', require('./routes/printer-print'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
