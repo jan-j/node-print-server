@@ -1,15 +1,9 @@
 var request = require('supertest');
+var printerStub = require('./stubs/printer.stub');
 var proxyquire = require('proxyquire');
 
 describe('printers endpoint', function () {
     var server;
-
-    var printerStub = {
-        printers: [],
-        getPrinters: function () {
-            return this.printers;
-        }
-    };
 
     var printersResponse = [
         {
@@ -32,7 +26,7 @@ describe('printers endpoint', function () {
         }
     ];
 
-    proxyquire('../routes/printers.js', {
+    proxyquire('../util/print_util', {
         printer: printerStub
     });
 

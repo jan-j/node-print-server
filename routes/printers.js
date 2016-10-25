@@ -1,10 +1,11 @@
 var express = require('express');
-var printer_interface = require('printer');
+var print_util = require('../util/print_util');
 var router = express.Router();
 
 // GET printers listing
 router.get('/', function (req, res, next) {
-    var printers = printer_interface.getPrinters();
+    var printers = print_util.getPrinters();
+
     res.json({
         status: 'success',
         data: printers

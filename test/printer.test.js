@@ -1,43 +1,9 @@
 var request = require('supertest');
+var printerStub = require('./stubs/printer.stub');
 var proxyquire = require('proxyquire');
 
 describe('printer endpoint', function () {
     var server;
-
-    var printerStub = {
-        printer: null,
-        printerDriverOptions: null,
-        job: null,
-        jobCancel: false,
-        getPrinter: function (name) {
-            if (!this.printer) {
-                throw new TypeError('Printer not found');
-            } else {
-                return this.printer;
-            }
-        },
-        getPrinterDriverOptions: function (name) {
-            if (!this.printerDriverOptions) {
-                throw new TypeError('Printer not found');
-            } else {
-                return this.printerDriverOptions;
-            }
-        },
-        getJob: function (name, id) {
-            if (!this.job) {
-                throw new TypeError('Printer job not found');
-            } else {
-                return this.job;
-            }
-        },
-        setJob: function (name, id, command) {
-            if (!this.job) {
-                throw new TypeError('Printer job not found');
-            } else {
-                return this.jobCancel;
-            }
-        }
-    };
 
     var printerResponse = {
         isDefault: false,
@@ -85,9 +51,8 @@ describe('printer endpoint', function () {
         }
     };
 
-    proxyquire('../routes/printer.js', {
+    proxyquire('../util/print_util', {
         printer: printerStub
-
     });
 
     beforeEach(function () {
