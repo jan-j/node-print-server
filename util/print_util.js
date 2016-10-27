@@ -1,4 +1,5 @@
 var printer_interface = require('printer');
+var request = require('request');
 var print_util = {};
 
 /**
@@ -83,16 +84,16 @@ print_util.setJob = function (name, id, command) {
 
 /**
  * @param {string} name
- * @param {string} base64Content
+ * @param {string} content
  * @param {function} success
  * @param {function} error
  * @returns {int}
  */
-print_util.printBase64File = function (name, base64Content, success, error) {
+print_util.printDirect = function (name, content, success, error) {
     try {
         printer_interface.printDirect({
             printer: name,
-            data: Buffer.from(base64Content, 'base64'),
+            data: content,
             type: print_util.PRINT_FORMATS.AUTO,
             options: {
                 'fit-to-page': true
@@ -103,6 +104,38 @@ print_util.printBase64File = function (name, base64Content, success, error) {
     } catch (e) {
         error(e.message);
     }
+};
+
+/**
+ * @param {string} name
+ * @param {string} base64Content
+ * @param {function} success
+ * @param {function} error
+ * @returns {int}
+ */
+print_util.printFromBase64 = function (name, base64Content, success, error) {
+    print_util.printDirect(name, Buffer.from(base64Content, 'base64'), success, error);
+};
+
+/**
+ * @param {string} name
+ * @param {string} url
+ * @param {function} success
+ * @param {function} error
+ * @returns {int}
+ */
+print_util.printFromUrl = function (name, url, success, error) {
+    request.get(url, function (err, response, body) {
+        if (err) {
+            error(err);
+            return;
+        } else if (parseInt(response.statusCode) < 200 || parseInt(response.statusCode) >= 300) {
+            error('File at "' + url + '" responded with ' + response.statusCode + ' status code');
+            return;
+        }
+
+        print_util.printDirect(name, body, success, error);
+    });
 };
 
 print_util.PRINT_FORMATS = {

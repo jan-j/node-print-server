@@ -19,7 +19,7 @@ router.post('/:name/print', function (req, res, next) {
     }
 
     if (req.body.content) {
-        print_util.printBase64File(
+        print_util.printFromBase64(
             name,
             req.body.content,
             function successCallback(jobId) {
@@ -39,7 +39,25 @@ router.post('/:name/print', function (req, res, next) {
             }
         );
     } else if (req.body.url) {
-        print_util.printUrl(name, req.body.content);
+        print_util.printFromUrl(
+            name,
+            req.body.url,
+            function successCallback(jobId) {
+                res
+                    .json({
+                        status: 'success',
+                        data: print_util.getJob(name, jobId)
+                    });
+            },
+            function errorCallback(err) {
+                res
+                    .status(400)
+                    .json({
+                        status: 'error',
+                        message: 'File printing on printer "' + name + '" has failed.'
+                    });
+            }
+        );
     } else {
         res
             .status(400)
