@@ -1,5 +1,6 @@
 var printer_interface = require('printer');
 var request = require('request');
+var debug = require('debug')('error');
 var print_util = {};
 
 /**
@@ -17,6 +18,7 @@ print_util.getPrinter = function (name) {
     try {
         var printer = printer_interface.getPrinter(name);
     } catch (e) {
+        debug('Exception thrown while calling printer.getPrinter(' + name + ')', e);
         return null;
     }
 
@@ -35,6 +37,7 @@ print_util.getPrinterDriverOptions = function (name) {
     try {
         var driverOptions = printer_interface.getPrinterDriverOptions(name);
     } catch (e) {
+        debug('Exception thrown while calling printer.getPrinterDriverOptions(' + name + ')', e);
         return null;
     }
 
@@ -50,6 +53,7 @@ print_util.getJob = function (name, id) {
     try {
         var job = printer_interface.getJob(name, id);
     } catch (e) {
+        debug('Exception thrown while calling printer.getJob(' + [name, id].join(', ') + ')', e);
         return null;
     }
 
@@ -63,9 +67,9 @@ print_util.getJob = function (name, id) {
  * @returns {boolean|null}
  */
 print_util.setJob = function (name, id, command) {
-    try {
-        var job = printer_interface.getJob(name, id);
-    } catch (e) {
+    var job = print_util.getJob(name, id);
+
+    if (!job) {
         return null;
     }
 
@@ -74,8 +78,9 @@ print_util.setJob = function (name, id, command) {
     }
 
     try {
-        var status = printer_interface.setJob(name, id, 'CANCEL');
+        var status = printer_interface.setJob(name, id, command);
     } catch (e) {
+        debug('Exception thrown while calling printer.setJob(' + [name, id, command].join(', ') + ')', e);
         return false;
     }
 
@@ -102,6 +107,7 @@ print_util.printDirect = function (name, content, success, error) {
             error: error
         });
     } catch (e) {
+        debug('Exception thrown while calling printer.printDirect(' + [name, '...'].join(', ') + ')', e);
         error(e.message);
     }
 };
@@ -130,6 +136,7 @@ print_util.printFromUrl = function (name, url, success, error) {
             error(err);
             return;
         } else if (parseInt(response.statusCode) < 200 || parseInt(response.statusCode) >= 300) {
+            debug('Error: File at "' + url + '" responded with ' + response.statusCode + ' status code');
             error('File at "' + url + '" responded with ' + response.statusCode + ' status code');
             return;
         }
